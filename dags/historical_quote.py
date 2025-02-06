@@ -1,11 +1,12 @@
 from airflow.decorators import task, dag
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.http.sensors.http import HttpSensor
 from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
 import pandas as pd
 
-@dag(schedule=None, start_date=datetime(2024, 1, 1), catchup=False)
+@dag(schedule="@weekly", start_date=datetime(2024, 1, 1), catchup=False)
 def fetch_multiple_tickers():
     http_sensor_task = HttpSensor(
         task_id = "check_api",
@@ -15,6 +16,12 @@ def fetch_multiple_tickers():
         timeout=20,
         mode="poke"
     )
+
+    db_sensor_task = PostgresOperator(
+        task_id="test_postgres_connection",
+        postgres_conn_id="local_pg",  # Change this if using a different connection
+        sql="SELECT 1;")
+    
     
     @task
     def fetch_list_of_tickers():
@@ -48,13 +55,9 @@ def fetch_multiple_tickers():
     @task
     def push_to_stg(df):
         hook = PostgresHook(postgres_conn_id='local_pg_stg')
-        table = ' inv_stg.public.stock_quotes_history'
+        table = ' inv_stg.public.stg_stock_quotes_history'
         columns = [c for c in df.columns]
         data_tuple = [tuple(x) for x in df[columns].values]
-        query = f"""
-                INSERT INTO {table} ({[x for x in columns]})
-                VALUES %s
-                """
         hook.insert_rows(table=table, rows=data_tuple, target_fields=columns)
     
     tickers = fetch_list_of_tickers()
@@ -62,7 +65,9 @@ def fetch_multiple_tickers():
     aggregated = aggregate_results(fetch_tasks)
     insert_task = push_to_stg(aggregated)
 
-    http_sensor_task >> tickers >> fetch_tasks >> aggregated >> insert_task
+    http_sensor_task >> fetch_tasks
+    db_sensor_task >> tickers >> fetch_tasks 
+    fetch_tasks >>  aggregated >> insert_task
 
 fetch_multiple_tickers()
     
