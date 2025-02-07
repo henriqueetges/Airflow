@@ -6,7 +6,7 @@ from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
 import pandas as pd
 
-@dag(schedule="@weekly", start_date=datetime(2024, 1, 1), catchup=False)
+@dag(schedule="@weekly", start_date=datetime.now(), catchup=False)
 def fetch_multiple_tickers():
 
     http_sensor_task = HttpSensor(
