@@ -10,3 +10,6 @@ webserver_config.py
 airflow.cfg
 airflow.db
 .vscode
+profiles.yml
+.user.yml
+dags/logs
