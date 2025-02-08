@@ -1,7 +1,7 @@
 
-name: 'dbt_project'
+name: 'carteira_dbt_airflow'
 version: '1.0.0'
-profile: 'my_dbt_project'
+profile: 'carteira_dbt_airflow'
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
@@ -13,7 +13,8 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+on-run-end:
+  - "{{ drop_unused_tables() }}"
 models:
-  dbt_project:
-    example:
-      +materialized: table
+  carteira_dbt_airflow:
+    +materialized: table
