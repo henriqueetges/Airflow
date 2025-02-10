@@ -12,9 +12,6 @@ snapshot-paths: ["snapshots"]
 clean-targets:       
   - "target"
   - "dbt_packages"
-
-on-run-end:
-  - "{{ drop_unused_tables() }}"
 models:
   carteira_dbt_airflow:
     +materialized: table
