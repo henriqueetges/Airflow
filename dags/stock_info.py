@@ -25,12 +25,6 @@ def fetch_stock_info():
         sql="SELECT 1;"
     )
     
-    delete_tickers = PostgresOperator(
-        task_id="delete_tickers",
-        postgres_conn_id="local_pg", 
-        sql="DROP TABLE IF EXISTS inv.public.stock_info;"
-    )
-
     @task
     def fetch_list_of_tickers():
         hook = PostgresHook(postgres_conn_id='local_pg')
@@ -49,7 +43,7 @@ def fetch_stock_info():
     
     @task
     def insert_into_prod(data):
-        table = 'inv.public.stock_info'
+        table = 'stock_info'
         hook = PostgresHook(postgres_conn_id='local_pg')
         engine = hook.get_sqlalchemy_engine()
         df = pd.DataFrame(data)
@@ -71,7 +65,7 @@ def fetch_stock_info():
     aggregate = aggregate_info(data=data)
     insert_prod = insert_into_prod(data=aggregate)
         
-    http_sensor_task >> db_sensor_task >> tickers >> delete_tickers >> data >> aggregate >> insert_prod
+    http_sensor_task >> db_sensor_task >> tickers >> data >> aggregate >> insert_prod
 
 
 fetch_stock_info()
