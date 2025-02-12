@@ -25,7 +25,10 @@ jobs:
       - name: install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install apache-airflow dbt_core dbt_postgres astronomer-providers apache-airflow-providers-postgres sqlalchemy
+          pip install apache-airflow apache-airflow-providers-postgres
+          pip install dbt_core dbt_postgres 
+          pip install astronomer-providers 
+          pip install sqlalchemy
       
       - name: Validate DAGs
         run: |
@@ -35,3 +38,7 @@ jobs:
         run: |
           cd dags/carteira_dbt_airflow
           dbt debug          
+      
+      - name: Clear cache
+        run: |
+          pip cache purge
