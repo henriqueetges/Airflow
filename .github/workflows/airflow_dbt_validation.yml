@@ -31,7 +31,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt_core dbt_postgres 
           pip install astronomer-providers 
-          pip install apache-airflow-providers-postgres==2.0.1 
+          pip install apache-airflow-providers-postgres==6.0.0 
           pip install sqlalchemy
       
       - name: Validate DAGs
