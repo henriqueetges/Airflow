@@ -7,7 +7,7 @@ on:
 
 jobs:
   airflow_dbt_checks:
-    run_on: ubuntu_latest
+    runs_on: ubuntu_latest
 
     steps:
       - name: Checkout repo
