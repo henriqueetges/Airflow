@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   airflow_dbt_checks:
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout repo
@@ -34,4 +34,4 @@ jobs:
       - name: Run dbt Debug
         run: |
           cd dags/carteira_dbt_airflow
-          dbt debug
+          dbt debug          
