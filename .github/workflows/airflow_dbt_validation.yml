@@ -5,6 +5,10 @@ on:
     branches: 
       - main
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   airflow_dbt_checks:
     runs-on: ubuntu_latest
