@@ -34,6 +34,11 @@ jobs:
           pip install apache-airflow-providers-postgres==6.0.0rc2
           pip install sqlalchemy
       
+      - name: Show packages
+        run: |
+          pip show apache-airflow
+          pip show apache-airflow-providers-postgres
+      
       - name: Validate DAGs
         run: |
           python .github/validate_dags.py
