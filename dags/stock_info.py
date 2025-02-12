@@ -3,7 +3,6 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.http.sensors.http import HttpSensor
 from airflow.providers.http.hooks.http import HttpHook
-from sqlalchemy import create_engine
 from datetime import datetime
 import pandas as pd
 
@@ -52,7 +51,7 @@ def fetch_stock_info():
             print(f"{table} created succesfully!")
         except Exception as e:
             print(e)
-        return 
+
     
     @task
     def aggregate_info(data):
