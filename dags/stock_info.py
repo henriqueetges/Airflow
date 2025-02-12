@@ -6,7 +6,12 @@ from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
 import pandas as pd
 
-@dag(schedule="@monthly", start_date=datetime.now(), catchup=False)
+@dag(
+    schedule="@monthly"
+    , start_date=datetime.now()
+    , catchup=False
+    , tags=['api']
+)
 def fetch_stock_info():
 
     http_sensor_task = HttpSensor(

@@ -4,7 +4,13 @@ from datetime import datetime
 import pandas as pd
 import yfinance
 
-@dag(schedule="@daily", start_date=datetime(2025, 1, 1), catchup=False)
+@dag(
+    schedule="@daily"
+    , start_date=datetime(2025, 1, 1)
+    , catchup=False
+    , tags=['api']
+)
+
 def fetch_news():
 
     @task

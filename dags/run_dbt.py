@@ -3,7 +3,13 @@ import logging
 from datetime import datetime
 import subprocess
 
-@dag(dag_id="run_dbt", schedule="@weekly", catchup=False, start_date=datetime(2025, 1, 1))
+@dag(
+    dag_id="run_dbt"
+    , schedule="@weekly"
+    , catchup=False
+    , start_date=datetime(2025, 1, 1)
+    , tags=['environment']
+)
 def run_dbt_dag():
 
     @task
