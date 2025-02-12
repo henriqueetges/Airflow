@@ -1,0 +1,33 @@
+name: Check Dags and Models
+
+on:
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  airflow_dbt_checks:
+    run_on: ubuntu_latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set Python
+        uses: actions/setup-python@v4
+        with:
+          python-version=: '3.9'
+      
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install apache-airflow dbt_core dbt_postgres astronomer-providers
+      
+      - name: Validate DAGs
+        run: |
+          python -c "python -c "import os; from airflow.models import DagBag; dag_bag = DagBag(os.getenv('GITHUB_WORKSPACE') + '/dags'); assert not dag_bag.import_errors, f'DAG import errors: {dag_bag.import_errors}'""
+      
+      - name: Run dbt Debug
+        run: |
+          cd dags/carteira_dbt_airflow
+          dbt debug
