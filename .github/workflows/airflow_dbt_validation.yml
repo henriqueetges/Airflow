@@ -25,7 +25,7 @@ jobs:
       
       - name: Validate DAGs
         run: |
-          python -c "python -c "import os; from airflow.models import DagBag; dag_bag = DagBag(os.getenv('GITHUB_WORKSPACE') + '/dags'); assert not dag_bag.import_errors, f'DAG import errors: {dag_bag.import_errors}'""
+          python .github\validate_dags.py
       
       - name: Run dbt Debug
         run: |
