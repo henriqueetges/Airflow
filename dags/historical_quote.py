@@ -15,29 +15,29 @@ import pandas as pd
 def fetch_multiple_tickers():
 
     http_sensor_task = HttpSensor(
-        task_id = "check_api",
-        http_conn_id="brapi",
-        endpoint="quote/BBAS3",
-        poke_interval=5, 
-        timeout=20,
-        mode="poke"
+        task_id = "check_api"
+        , http_conn_id="brapi"
+        , endpoint="quote/BBAS3"
+        , poke_interval=5
+        , timeout=20
+        , mode="poke"
     )
 
     db_sensor_task = PostgresOperator(
-        task_id="test_postgres_connection",
-        postgres_conn_id="local_pg", 
-        sql="SELECT 1;")
+        task_id="test_postgres_connection"
+        , postgres_conn_id="local_pg"
+        , sql="SELECT 1;")
     
     truncate_stg = PostgresOperator(
-        task_id="truncate_history_stg",
-        postgres_conn_id="local_pg_stg", 
-        sql="TRUNCATE TABLE inv_stg.public.stg_stock_quotes_history RESTART IDENTITY CASCADE;"
+        task_id="truncate_history_stg"
+        , postgres_conn_id="local_pg_stg"
+        , sql="TRUNCATE TABLE inv_stg.public.stg_stock_quotes_history RESTART IDENTITY CASCADE;"
     )
     
     delete_week_data = PostgresOperator(
-        task_id="delete7days",
-        postgres_conn_id="local_pg", 
-        sql="DELETE FROM inv.public.stock_quotes_history WHERE date >= now() - INTERVAL '7 DAYS'"
+        task_id="delete7days"
+        , postgres_conn_id="local_pg"
+        , sql="DELETE FROM inv.public.stock_quotes_history WHERE date >= now() - INTERVAL '7 DAYS'"
     )
 
     @task
@@ -99,7 +99,5 @@ def fetch_multiple_tickers():
 
     http_sensor_task >> tickers >> fetch_tasks >> aggregated >> truncate_stg >> insert_stg >> delete_week_data >> insert_prod
     db_sensor_task >> tickers >> fetch_tasks >> aggregated >> truncate_stg >> insert_stg >> delete_week_data >> insert_prod
-    
-
 fetch_multiple_tickers()
     

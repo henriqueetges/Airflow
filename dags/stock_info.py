@@ -13,20 +13,20 @@ import pandas as pd
     , tags=['api']
 )
 def fetch_stock_info():
-
     http_sensor_task = HttpSensor(
-        task_id = "check_api",
-        http_conn_id="brapi",
-        endpoint="quote/BBAS3",
-        poke_interval=5, 
-        timeout=20,
-        mode="poke"
+        task_id = "check_api"
+        , endpoint="quote/BBAS3"
+        , http_conn_id="brapi"
+        , poke_interval=5
+        , timeout=20
+        , mode="poke"
     )
 
+
     db_sensor_task = PostgresOperator(
-        task_id="test_postgres_connection",
-        postgres_conn_id="local_pg", 
-        sql="SELECT 1;"
+        task_id="test_postgres_connection"
+        , postgres_conn_id="local_pg"
+        , sql="SELECT 1;"
     )
     
     @task
