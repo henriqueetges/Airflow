@@ -1,2 +1,5 @@
 project:
     name: airflow
+    volumes:
+        - host: /.backup
+          container: /usr/local/airflow/backup
