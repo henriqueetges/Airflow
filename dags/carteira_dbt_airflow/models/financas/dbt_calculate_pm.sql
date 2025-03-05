@@ -35,3 +35,4 @@ FROM interval I
 LEFT JOIN totals T
     ON I.dt >= T.transac_date
 group by 1, 2
+HAVING SUM(total_quantity) > 0
