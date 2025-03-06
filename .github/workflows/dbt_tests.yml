@@ -40,7 +40,4 @@ jobs:
               dbt parse
               
 
-          - name: Compile models
-            run: |
-              cd dags/carteira_dbt_airflow
-              dbt compile
+
