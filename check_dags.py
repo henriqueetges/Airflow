@@ -1,7 +1,7 @@
 import os
 from airflow.models import DagBag
 
-def check_dags()
+def check_dags():
     dag_bag = DagBag()
     if dag_bag.import_errors:
         raise Exception(f'Import errors occurred, {dag_bag.import_errors}')
