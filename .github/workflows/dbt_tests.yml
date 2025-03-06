@@ -35,7 +35,12 @@ jobs:
                 dbt debug --config-dir
 
           - name: Validate syntax of models
-            run : dbt parse
+            run : |
+              cd dags/carteira_dbt_airflow
+              dbt parse
+              
 
           - name: Compile models
-            run: dbt compile
+            run: |
+              cd dags/carteira_dbt_airflow
+              dbt compile
