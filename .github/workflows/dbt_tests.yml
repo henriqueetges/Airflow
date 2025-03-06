@@ -27,9 +27,9 @@ jobs:
             run: | 
               mkdir -p ~/.dbt
               echo "${{ secrets.PROFILES_YML }}" > ~/.dbt/profiles.yml
-              cat ~/.dbt/profiles.yml 
+              
 
           - name: run dbt debug
             run: |
                 cd dags/carteira_dbt_airflow
-                dbt debug
+                dbt debug --no-profiles
