@@ -29,7 +29,13 @@ jobs:
               echo "${{ secrets.PROFILES_YML }}" > ~/.dbt/profiles.yml
               
 
-          - name: run dbt debug
+          - name: Check installation
             run: |
                 cd dags/carteira_dbt_airflow
-                dbt debug --no-profiles
+                dbt debug --config-dir
+
+          - name: Validate syntax of models
+            run : dbt parse
+
+          - name: Compile models
+            run: dbt compile
