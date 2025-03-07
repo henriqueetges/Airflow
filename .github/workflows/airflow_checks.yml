@@ -46,12 +46,6 @@ jobs:
             --conn-password password \
             --conn-schema mockup_db
 
-        - name: Verify package
-          run: pip list | grep airflow
-
-        - name: List providers
-          run: airflow providers list
-
         - name: Check Dags for errors
           run: |
             python check_dags.py
