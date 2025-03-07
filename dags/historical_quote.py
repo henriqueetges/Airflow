@@ -1,6 +1,6 @@
 from airflow.decorators import task, dag
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.http.sensors.http import HttpSensor
 from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
@@ -23,18 +23,18 @@ def fetch_multiple_tickers():
         , mode="poke"
     )
 
-    db_sensor_task = PostgresOperator(
+    db_sensor_task = SQLExecuteQueryOperator(
         task_id="test_postgres_connection"
         , postgres_conn_id="local_pg"
         , sql="SELECT 1;")
     
-    truncate_stg = PostgresOperator(
+    truncate_stg = SQLExecuteQueryOperator(
         task_id="truncate_history_stg"
         , postgres_conn_id="local_pg_stg"
         , sql="TRUNCATE TABLE inv_stg.public.stg_stock_quotes_history RESTART IDENTITY CASCADE;"
     )
     
-    delete_week_data = PostgresOperator(
+    delete_week_data = SQLExecuteQueryOperator(
         task_id="delete7days"
         , postgres_conn_id="local_pg"
         , sql="DELETE FROM inv.public.stock_quotes_history WHERE date >= now() - INTERVAL '7 DAYS'"
