@@ -14,4 +14,3 @@ airflow.db
 profiles.yml
 .user.yml
 dags/logs
-.github/
