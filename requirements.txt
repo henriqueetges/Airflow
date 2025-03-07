@@ -3,3 +3,4 @@ pandas~=2.2.2
 yfinance~=0.2.52
 sqlalchemy~=1.4.54
 pytest~=7.4.4
+

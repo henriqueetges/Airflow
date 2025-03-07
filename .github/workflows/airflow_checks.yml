@@ -28,6 +28,10 @@ jobs:
         - name: Install requirements
           run: pip install -r requirements.txt
 
+        - name: Init dbt
+          run: |
+            airflow db init
+
         - name: Check Dags for errors
           run: |
             python check_dags.py
