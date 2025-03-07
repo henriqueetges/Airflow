@@ -1,6 +1,6 @@
 from airflow.decorators import task, dag
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.http.sensors.http import HttpSensor
 from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
@@ -23,9 +23,9 @@ def fetch_stock_info():
     )
 
 
-    db_sensor_task = PostgresOperator(
+    db_sensor_task = SQLExecuteQueryOperator(
         task_id="test_postgres_connection"
-        , postgres_conn_id="local_pg"
+        , conn_id="local_pg"
         , sql="SELECT 1;"
     )
     
