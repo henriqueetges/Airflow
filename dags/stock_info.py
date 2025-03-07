@@ -25,7 +25,7 @@ def fetch_stock_info():
 
     db_sensor_task = SQLExecuteQueryOperator(
         task_id="test_postgres_connection"
-        , postgres_conn_id="local_pg"
+        , conn_id="local_pg"
         , sql="SELECT 1;"
     )
     

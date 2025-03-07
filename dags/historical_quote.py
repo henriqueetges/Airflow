@@ -25,18 +25,18 @@ def fetch_multiple_tickers():
 
     db_sensor_task = SQLExecuteQueryOperator(
         task_id="test_postgres_connection"
-        , postgres_conn_id="local_pg"
+        , conn_id="local_pg"
         , sql="SELECT 1;")
     
     truncate_stg = SQLExecuteQueryOperator(
         task_id="truncate_history_stg"
-        , postgres_conn_id="local_pg_stg"
+        , conn_id="local_pg_stg"
         , sql="TRUNCATE TABLE inv_stg.public.stg_stock_quotes_history RESTART IDENTITY CASCADE;"
     )
     
     delete_week_data = SQLExecuteQueryOperator(
         task_id="delete7days"
-        , postgres_conn_id="local_pg"
+        , conn_id="local_pg"
         , sql="DELETE FROM inv.public.stock_quotes_history WHERE date >= now() - INTERVAL '7 DAYS'"
     )
 
