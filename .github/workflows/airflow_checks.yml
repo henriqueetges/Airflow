@@ -32,6 +32,24 @@ jobs:
           run: |
             airflow db init
 
+        - name: Create Mockup PROD connection
+          run: |
+            airflow connections add local_pg \
+            --conn-type postgres \
+            --conn-host mockup \
+            --conn-login login \
+            --conn-password password \
+            --conn-schema mockup_db
+
+        - name: Create Mockup STG connection
+          run: |
+            airflow connections add local_pg_stg \
+            --conn-type postgres \
+            --conn-host mockup \
+            --conn-login login \
+            --conn-password password \
+            --conn-schema mockup_db
+
         - name: Check Dags for errors
           run: |
             python check_dags.py
