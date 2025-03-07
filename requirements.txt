@@ -5,4 +5,3 @@ pytest
 apache-airflow==2.10.5
 apache-airflow-providers-postgres
 apache-airflow-providers-http
-
