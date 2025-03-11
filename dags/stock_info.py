@@ -5,7 +5,6 @@ from airflow.providers.http.sensors.http import HttpSensor
 from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
 import pandas as pd
-from conda_env.cli.main_list import description
 
 
 @dag(
@@ -13,9 +12,11 @@ from conda_env.cli.main_list import description
     , start_date=datetime.now()
     , catchup=False
     , tags=['api']
-    , description="Pulls stock info such as industry, adresses, webpage and etc."
 )
 def fetch_stock_info():
+    """
+    Pulls stock info such as industry, adresses, webpage and etc.
+    """
     http_sensor_task = HttpSensor(
         task_id = "check_api"
         , endpoint="quote/BBAS3"
@@ -23,7 +24,6 @@ def fetch_stock_info():
         , poke_interval=5
         , timeout=20
         , mode="poke"
-        , description="Checks for API availability"
     )
 
 
@@ -31,7 +31,7 @@ def fetch_stock_info():
         task_id="test_postgres_connection"
         , conn_id="local_pg"
         , sql="SELECT 1;"
-        , description="Checks for database availability"
+
     )
     
     @task

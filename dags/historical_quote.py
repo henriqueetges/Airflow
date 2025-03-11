@@ -25,26 +25,23 @@ def fetch_multiple_tickers():
         , poke_interval=5
         , timeout=20
         , mode="poke"
-        , description="This task checks if the API is responsive"
     )
 
     db_sensor_task = SQLExecuteQueryOperator(
         task_id="test_postgres_connection"
         , conn_id="local_pg"
         , sql="SELECT 1;"
-        , description="This task checks if the PROD database is responsive")
+        )
     
     truncate_stg = SQLExecuteQueryOperator(
         task_id="truncate_history_stg"
         , conn_id="local_pg_stg"
-        , description="This task truncates the historical data from Stage"
         , sql="TRUNCATE TABLE inv_stg.public.stg_stock_quotes_history RESTART IDENTITY CASCADE;"
     )
     
     delete_week_data = SQLExecuteQueryOperator(
         task_id="delete7days"
         , conn_id="local_pg"
-        , description="This task deletes 7 days data from PROD"
         , sql="DELETE FROM inv.public.stock_quotes_history WHERE date >= now() - INTERVAL '7 DAYS'"
     )
 

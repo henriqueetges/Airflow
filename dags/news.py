@@ -9,11 +9,13 @@ import yfinance
     , start_date=datetime(2025, 1, 1)
     , catchup=False
     , tags=['api']
-    , description="Pulls news for each of the tickers inside of the wallet"
+
 )
 
 def fetch_news():
-
+    """
+    "Pulls news for each of the tickers inside of the wallet"
+    """
     @task
     def fetch_list_of_tickers():
         """
