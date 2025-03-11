@@ -2,4 +2,3 @@ pandas
 yfinance
 sqlalchemy
 pytest
-git
