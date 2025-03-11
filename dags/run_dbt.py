@@ -9,11 +9,15 @@ import subprocess
     , catchup=False
     , start_date=datetime(2025, 1, 1)
     , tags=['environment']
+    , description="Runs dbt to materialize models"
 )
 def run_dbt_dag():
 
     @task
     def dbt_run():
+        """
+        Navigates into dbt project folder and using subprocess runs dbt
+        """
         dbt_dir = '/usr/local/airflow/dags/carteira_dbt_airflow'
         print('Running dbt')
         try:

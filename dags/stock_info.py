@@ -5,12 +5,15 @@ from airflow.providers.http.sensors.http import HttpSensor
 from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
 import pandas as pd
+from conda_env.cli.main_list import description
+
 
 @dag(
     schedule="@monthly"
     , start_date=datetime.now()
     , catchup=False
     , tags=['api']
+    , description="Pulls stock info such as industry, adresses, webpage and etc."
 )
 def fetch_stock_info():
     http_sensor_task = HttpSensor(
@@ -20,6 +23,7 @@ def fetch_stock_info():
         , poke_interval=5
         , timeout=20
         , mode="poke"
+        , description="Checks for API availability"
     )
 
 
@@ -27,10 +31,14 @@ def fetch_stock_info():
         task_id="test_postgres_connection"
         , conn_id="local_pg"
         , sql="SELECT 1;"
+        , description="Checks for database availability"
     )
     
     @task
     def fetch_list_of_tickers():
+        """
+        Fetches list of tickers transacted upon
+        """
         hook = PostgresHook(postgres_conn_id='local_pg')
         sql = 'SELECT DISTINCT ticker from inv.public.transac'
         results = hook.get_records(sql)
@@ -39,6 +47,9 @@ def fetch_stock_info():
 
     @task
     def fetch_data_from_api(ticker):
+        """
+        Triggers get request to endpoints to fetch info data for each ticker
+        """
         http_hook = HttpHook(method='GET', http_conn_id='brapi')
         endpoint = f"quote/{ticker}"
         response = http_hook.run(endpoint=endpoint).json()
@@ -47,6 +58,9 @@ def fetch_stock_info():
     
     @task
     def insert_into_prod(data):
+        """
+        Inserts into PROD data for each ticker
+        """
         table = 'stock_info'
         hook = PostgresHook(postgres_conn_id='local_pg')
         engine = hook.get_sqlalchemy_engine()
@@ -60,6 +74,9 @@ def fetch_stock_info():
     
     @task
     def aggregate_info(data):
+        """
+        Aggregate all the tickers data into a single DataFrame
+        """
         df = [pd.DataFrame(df) for df in data]
         final_df = pd.concat(df, ignore_index=True)
         return final_df
