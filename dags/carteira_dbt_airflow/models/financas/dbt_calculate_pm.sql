@@ -2,6 +2,7 @@
 
 
 with totals as (
+/* CALCULATES THE TOTAL TRANSACTION FOR EACH DAY AND EACH TICKER */
 SELECT 
 transac_date,
 ticker, 

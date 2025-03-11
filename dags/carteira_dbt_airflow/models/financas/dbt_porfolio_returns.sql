@@ -1,4 +1,8 @@
-SELECT 
+/*
+ CALCULATES FOR EACH OF THE TICKERS THE PM, THE POSITIONS AT THE DAY AND THE ESTIMATE PROFITS AT THAT DAY
+ */
+
+SELECT
     pm.*
     , (sh.open * pm.total_quantity)::numeric AS position_open
     , (sh.close * pm.total_quantity)::numeric AS position_close
