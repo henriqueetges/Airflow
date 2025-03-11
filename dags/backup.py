@@ -3,6 +3,11 @@ from airflow.operators.bash import BashOperator
 from airflow.hooks.base import BaseHook
 from datetime import datetime
 
+"""
+This DAG is to server as a backup option for both of the databases on the project. Because this project runs on docker 
+and my database is in of them, I might lose the data on them in case I 'accidentally' do something to the astro version. 
+It only backups up the actual data as of now.
+"""
 
 stg = BaseHook.get_connection("local_pg_stg")
 prod = BaseHook.get_connection("local_pg")

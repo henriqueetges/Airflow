@@ -9,12 +9,18 @@ import yfinance
     , start_date=datetime(2025, 1, 1)
     , catchup=False
     , tags=['api']
+
 )
 
 def fetch_news():
-
+    """
+    "Pulls news for each of the tickers inside of the wallet"
+    """
     @task
     def fetch_list_of_tickers():
+        """
+        Fetches list of tickers transacted upon
+        """
         hook = PostgresHook(postgres_conn_id='local_pg')
         sql = 'SELECT DISTINCT ticker from inv.public.transac'
         results = hook.get_records(sql)
@@ -22,6 +28,9 @@ def fetch_news():
         return ticker_list
     @task
     def fetch_news_from_api(ticker):
+        """
+        Fetches news from API by using yfinance for each ticker
+        """
         news = yfinance.Ticker(ticker).news
         list_of_news = [x.get('content') for x in news]
         list_of_contents = [{**d, 'ticker': ticker} for d in list_of_news]
@@ -29,6 +38,9 @@ def fetch_news():
 
     @task
     def aggregate_news(news):
+        """
+        Aggregates news from all of the stocks
+        """
         df = [pd.json_normalize(df) for df in news]
         final = pd.concat(df, ignore_index=True)
         print(final.columns)
@@ -45,6 +57,9 @@ def fetch_news():
 
     @task
     def insert_into_stg(data):
+        """
+        Insert the news into stg
+        """
         table = 'stg_stock_news'
         hook = PostgresHook(postgres_conn_id='local_pg_stg')
         engine = hook.get_sqlalchemy_engine()
@@ -56,6 +71,9 @@ def fetch_news():
 
     @task
     def insert_into_prod():
+        """
+        Inserts into PROD only the news that are new
+        """
         prod = PostgresHook(postgres_conn_id='local_pg')
         stg = PostgresHook(postgres_conn_id='local_pg_stg')
         max_date = prod.get_pandas_df("SELECT MAX('pubDate') FROM inv.public.stock_news").iloc[0,0]

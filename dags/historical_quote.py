@@ -6,14 +6,18 @@ from airflow.providers.http.hooks.http import HttpHook
 from datetime import datetime
 import pandas as pd
 
+
 @dag(
-    schedule="@weekly"
+  schedule="@weekly"
     , start_date=datetime.now()
     , catchup=False
     , tags=['api']
+    , description="This dag fetches data from the Stock Market API"
 )
 def fetch_multiple_tickers():
-
+    """
+    Fetches data for each ticker currently in the database
+    """
     http_sensor_task = HttpSensor(
         task_id = "check_api"
         , http_conn_id="brapi"
@@ -26,7 +30,8 @@ def fetch_multiple_tickers():
     db_sensor_task = SQLExecuteQueryOperator(
         task_id="test_postgres_connection"
         , conn_id="local_pg"
-        , sql="SELECT 1;")
+        , sql="SELECT 1;"
+        )
     
     truncate_stg = SQLExecuteQueryOperator(
         task_id="truncate_history_stg"
@@ -42,6 +47,10 @@ def fetch_multiple_tickers():
 
     @task
     def fetch_list_of_tickers():
+        """
+        This is to fetch the tickers I have listed as transacted upon. I want to only fetch data from stocks
+        that have transactions
+        """
         hook = PostgresHook(postgres_conn_id='local_pg')
         sql = 'SELECT DISTINCT ticker from inv.public.transac'
         results = hook.get_records(sql)
@@ -50,6 +59,9 @@ def fetch_multiple_tickers():
 
     @task
     def fetch_data_from_api(ticker):
+        """
+        Fetches quotes data for the ticker by sending GET request to the endpoint
+        """
         http_hook = HttpHook(method='GET', http_conn_id='brapi')
         endpoint = f"quote/{ticker}"
         params = {
@@ -63,6 +75,9 @@ def fetch_multiple_tickers():
     
     @task
     def aggregate_results(results):
+        """
+        Aggregates the results of all the tickers fetched into a single dataframe
+        """
         dfs = [pd.DataFrame(result) for result in results]
         final_df = pd.concat(dfs, ignore_index=True)
         final_df['date'] = pd.to_datetime(final_df['date'], unit='s')
@@ -71,6 +86,9 @@ def fetch_multiple_tickers():
     
     @task
     def push_to_stg(df):
+        """
+        Sends the dataframe into Stage
+        """
         hook = PostgresHook(postgres_conn_id='local_pg_stg')
         table = 'inv_stg.public.stg_stock_quotes_history'
         columns = [c for c in df.columns]
@@ -79,6 +97,9 @@ def fetch_multiple_tickers():
 
     @task
     def insert_into_prod():
+        """
+        Updates into prod only the quotes for the last 7 days
+        """
         prod = PostgresHook(postgres_conn_id='local_pg')
         stg = PostgresHook(postgres_conn_id='local_pg_stg')
         query = f"SELECT * FROM inv_stg.public.stg_stock_quotes_history WHERE date >= now() - INTERVAL '7 DAYS'"
