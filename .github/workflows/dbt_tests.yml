@@ -31,12 +31,12 @@ jobs:
 
           - name: Check installation
             run: |
-                cd dags/carteira_dbt_airflow
+                cd carteira_dbt_airflow
                 dbt debug --config-dir
 
           - name: Validate syntax of models
             run : |
-              cd dags/carteira_dbt_airflow
+              cd carteira_dbt_airflow
               dbt parse
               
 
