@@ -1,4 +1,3 @@
-
 name: 'carteira_dbt_airflow'
 version: '1.0.0'
 profile: 'carteira_dbt_airflow'

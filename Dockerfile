@@ -7,4 +7,7 @@ RUN pip install apache-airflow-providers-http
 RUN pip install --no-cache-dir dbt-postgres
 RUN apt-get update && apt-get install -y git
 ENV DBT_PROFILES_DIR=/usr/local/airflow/carteira_dbt_airflow/.dbt
-USER airflow
+COPY carteira_dbt_airflow /usr/local/airflow/carteira_dbt_airflow
+RUN chown -R astro:astro /usr/local/airflow/carteira_dbt_airflow  && \
+    chmod -R 755 /usr/local/airflow/carteira_dbt_airflow
+USER astro

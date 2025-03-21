@@ -1,0 +1,54 @@
+models:
+  - name: dbt_calculate_pm
+    description: | 
+      Calculates the average price for the stock for each stock current in the portfolio, that price is calculated 
+      for each day since the purchase of the stock as long as the stock is currently being hold
+    columns:
+      - name: dt
+        description: The date of the current position
+        tests:
+          - not_null
+      - name: ticker
+        description: The ticker of the stock
+        tests:
+          - not_null
+      - name: total_position
+        description: the total currency amount currently in the portfolio for the stock
+      - name: total_quantity
+        description: The total amount of shares owned for the stock
+      - name: pm
+        description: The average price of the position, taking into consideration the transactions done on it.
+
+  - name: dbt_porfolio_returns
+    description: |
+      Calculates portfolio returns for each of the stock owned based on how much is owned and what is the average price
+      paid for it
+    columns:
+      - name: dt
+        description: Date of reference
+        tests:
+          - not_null
+      - name: ticker
+        description: Ticker of the stock
+        tests:
+          - not_null
+      - name: total_position
+        description: The total amount owned in shares for the stock
+      - name: pm
+        description: The average price of the stock inside of the portfolio
+      - name: position_open
+        description: The value of the position at the open of the market, based on shares owned
+      - name: position_close
+        description: The value of the position at the close of the market, based on shares owned
+      - name: position_high
+        description: The value of the position at the high of the market, based on shares owned
+      - name: pl_open
+        description: Profit/Less at the open of the market
+      - name: pl_close
+        description: Profit/Less at the close of the market
+      - name: pl_high
+        description: Profit/Less at the high of the market
+
+
+
+
