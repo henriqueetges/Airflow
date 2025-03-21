@@ -17,8 +17,7 @@ def run_dbt_dag():
     def dbt_run():
         """
         Navigates into dbt project folder and using subprocess runs dbt
-        """
-        dbt_dir = '/usr/local/airflow/dags/carteira_dbt_airflow'
+        """astr
         print('Running dbt')
         try:
             process = subprocess.Popen(
