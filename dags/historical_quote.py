@@ -52,7 +52,7 @@ def fetch_multiple_tickers():
         that have transactions
         """
         hook = PostgresHook(postgres_conn_id='local_pg')
-        sql = 'SELECT DISTINCT ticker from inv.public.transac'
+        sql = """select distinct stock from assets_raw where type = 'stock'"""
         results = hook.get_records(sql)
         tickers = [row[0] for row in results]
         return tickers
@@ -67,11 +67,16 @@ def fetch_multiple_tickers():
         params = {
             "range": "3mo",
             "interval": "1d",
-        }
-        response = http_hook.run(endpoint=endpoint, data=params).json()
-        historical_records = response.get('results')[0].get('historicalDataPrice')
-        historical_records = [{**d, 'ticker': ticker} for d in historical_records]
-        return historical_records
+        }        
+        try:
+            response = http_hook.run(endpoint=endpoint, data=params).json()
+            historical_records = response.get('results')[0].get('historicalDataPrice')
+            historical_records = [{**d, 'ticker': ticker} for d in historical_records]
+            return historical_records   
+        except Exception as e:
+            print(e)
+
+                     
     
     @task
     def aggregate_results(results):
