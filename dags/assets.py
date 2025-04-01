@@ -46,10 +46,9 @@ def fetch_assets():
     
     @task
     def insert(data):
-        """_summary_
-
+        """
         Args:
-            data (_type_): _description_
+            data (_type_): inserts the assets data into a raw table in the production environment
         """
         table = "assets_raw"
         hook = PostgresHook(postgres_conn_id='local_pg')
@@ -60,10 +59,7 @@ def fetch_assets():
             print(f"{table} created succesfully!")
         except Exception as e:
             print(e)
-        
-    
-         
-    
+            
     assets = fetch_data_from_api()   
     table = insert(assets)
     http_sensor_task >> db_sensor_task >> assets >> table

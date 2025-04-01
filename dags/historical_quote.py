@@ -74,9 +74,7 @@ def fetch_multiple_tickers():
             historical_records = [{**d, 'ticker': ticker} for d in historical_records]
             return historical_records   
         except Exception as e:
-            print(e)
-
-                     
+            print(e)                     
     
     @task
     def aggregate_results(results):
@@ -122,7 +120,6 @@ def fetch_multiple_tickers():
     aggregated = aggregate_results(fetch_tasks)
     insert_stg = push_to_stg(aggregated)
     insert_prod = insert_into_prod()
-
     http_sensor_task >> tickers >> fetch_tasks >> aggregated >> truncate_stg >> insert_stg >> delete_week_data >> insert_prod
     db_sensor_task >> tickers >> fetch_tasks >> aggregated >> truncate_stg >> insert_stg >> delete_week_data >> insert_prod
 fetch_multiple_tickers()
