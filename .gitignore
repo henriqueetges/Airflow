@@ -14,3 +14,4 @@ airflow.db
 profiles.yml
 .user.yml
 dags/logs
+local.session.sql

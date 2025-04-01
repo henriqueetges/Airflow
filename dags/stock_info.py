@@ -40,7 +40,7 @@ def fetch_stock_info():
         Fetches list of tickers transacted upon
         """
         hook = PostgresHook(postgres_conn_id='local_pg')
-        sql = 'SELECT DISTINCT ticker from inv.public.transac'
+        sql = """SELECT DISTINCT stock from inv.public.assets_raw where type = 'stock' """
         results = hook.get_records(sql)
         tickers = [row[0] for row in results]
         return tickers
@@ -52,9 +52,12 @@ def fetch_stock_info():
         """
         http_hook = HttpHook(method='GET', http_conn_id='brapi')
         endpoint = f"quote/{ticker}"
-        response = http_hook.run(endpoint=endpoint).json()
-        records = [{**d, 'ticker': ticker} for d in response.get('results')]
-        return records
+        try:
+            response = http_hook.run(endpoint=endpoint).json()
+            records = [{**d, 'ticker': ticker} for d in response.get('results')]
+            return records
+        except Exception as e:
+            print(e)
     
     @task
     def insert_into_prod(data):
