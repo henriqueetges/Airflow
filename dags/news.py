@@ -22,7 +22,7 @@ def fetch_news():
         Fetches list of tickers transacted upon
         """
         hook = PostgresHook(postgres_conn_id='local_pg')
-        sql = 'SELECT DISTINCT ticker from inv.public.transac'
+        sql = """select distinct stock from assets_raw where type = 'stock'"""
         results = hook.get_records(sql)
         ticker_list = [row[0]+".SA" for row in results]
         return ticker_list
