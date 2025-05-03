@@ -3,3 +3,5 @@ project:
     volumes:
         - host: /.backup
           container: /usr/local/airflow/backup
+        - host: C:\Users\henri\OneDrive\Documents\Projetos\Airflow\carteira_dbt_airflow
+          container: /usr/local/airflow/carteira_dbt_airflow

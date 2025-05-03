@@ -1,0 +1,5 @@
+version: '3'
+services:
+  airflow:
+    volumes:
+      - /c/Users/henri/OneDrive/Documents/Projetos/Airflow/carteira_dbt_airflow:/usr/local/airflow/carteira_dbt_airflow
