@@ -15,3 +15,4 @@ profiles.yml
 .user.yml
 dags/logs
 local.session.sql
+stage.session.sql
