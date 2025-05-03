@@ -3,6 +3,7 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from datetime import datetime
 import pandas as pd
 import yfinance
+from sqlalchemy import Table, MetaData, insert
 
 @dag(
     schedule="@daily"
@@ -26,6 +27,7 @@ def fetch_news():
         results = hook.get_records(sql)
         ticker_list = [row[0]+".SA" for row in results]
         return ticker_list
+    
     @task
     def fetch_news_from_api(ticker):
         """
@@ -43,7 +45,7 @@ def fetch_news():
         """
         df = [pd.json_normalize(df) for df in news]
         final = pd.concat(df, ignore_index=True)
-        print(final.columns)
+        print(final['pubDate'].max())
         cols_to_keep = [
             'id'
             ,'title'
@@ -66,6 +68,7 @@ def fetch_news():
         try:
             data.to_sql(table, con=engine, if_exists='replace', index=True)
             print(f"{table} created succesfully!")
+            print(f"Last news publicated in {hook.get_records(f'SELECT max("pubDate") FROM {table} LIMIT 1')[0]}")
         except Exception as e:
             print(e)
 
@@ -76,18 +79,25 @@ def fetch_news():
         """
         prod = PostgresHook(postgres_conn_id='local_pg')
         stg = PostgresHook(postgres_conn_id='local_pg_stg')
-        max_date = prod.get_pandas_df("SELECT MAX('pubDate') FROM inv.public.stock_news").iloc[0,0]
-        query = f"SELECT * FROM inv_stg.public.stg_stock_news WHERE 'pubDate' > '{max_date}'"
+        max_date = datetime.fromisoformat(prod.get_pandas_df('SELECT MAX("pubDate") FROM inv.public.stock_news').iloc[0,0])
+        print(f"Last publicated news in prod is at {max_date}")
+        query = f"""SELECT * FROM inv_stg.public.stg_stock_news  WHERE "pubDate"::timestamp > '{max_date}'      
+        """
         results = stg.get_pandas_df(query)
-        try:
-            results.to_sql(
-                'inv.public.stock_news'
-                , con=prod.get_sqlalchemy_engine()
-                , if_exists='replace'
-                , index=False)
+        print(f"Found {results.shape[0]} records to insert into prod")
+
+        try: 
+            con = prod.get_sqlalchemy_engine()
+            metadata = MetaData()
+            table = Table('stock_news', metadata ,autoload_with=con)
+            with con.begin() as conn:
+                conn.execute(insert(table), results.to_dict(orient='records'))
+                last_date = conn.execute('SELECT max("pubDate") FROM inv.public.stock_news').fetchone()[0]
+            print(f"Last news publicated in prod is at {last_date}")     
             stg.run('TRUNCATE TABLE inv_stg.public.stg_stock_news RESTART IDENTITY CASCADE;')
         except Exception as e:
             print(e)
+
 
 
 
