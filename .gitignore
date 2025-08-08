@@ -16,3 +16,4 @@ profiles.yml
 dags/logs
 local.session.sql
 stage.session.sql
+*.yml
